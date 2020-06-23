@@ -83,9 +83,9 @@ fn main() -> Result<(), Error> {
                     // Get keycode out of Option and handle specific keycodes, ignore the rest.
                     match key.virtual_keycode.unwrap() {
                         VirtualKeyCode::Space => {
-                            if doomfire.is_lit() {
+                            if doomfire.is_lit {
                                 doomfire.extinguish();
-                            } else if !doomfire.is_lit() {
+                            } else if !doomfire.is_lit {
                                 doomfire.ignite();
                             }
                         }

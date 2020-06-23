@@ -66,7 +66,8 @@ pub const PALETTE: [[u8; 4]; 37] = [
 pub struct Doomfire {
     width: usize,
     height: usize,
-    is_lit: bool,
+    /// Returns whether the fire is lit e.g. whether `ignite()` (true) or `extinguish()` (false) was called last.
+    pub is_lit: bool,
     fire_pixels: Vec<usize>,
     rng: ThreadRng,
 }
@@ -167,12 +168,6 @@ impl Doomfire {
         } */
 
         self.is_lit = false;
-    }
-
-    /// Returns `true` if `ignite()` was called more recenlty than `extinguish()`
-    /// Returns `false` if `extinguish()` was called more recently than `ignite()`
-    pub fn is_lit(&self) -> bool {
-        self.is_lit
     }
 }
 
