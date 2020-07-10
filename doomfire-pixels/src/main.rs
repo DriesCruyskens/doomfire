@@ -1,13 +1,13 @@
 //! An implementation of doomfire using `pixels`.
-//! 
-//! Press `Space` to extinguish/ignite the fire (Extinguishing is not as immediate as igniting) . 
+//!
+//! Press `Space` to extinguish/ignite the fire (Extinguishing is not as immediate as igniting) .
 use doomfire::Doomfire;
 use pixels::{wgpu::Surface, Error, PixelsBuilder, SurfaceTexture};
 use std::thread;
 use std::time::{Duration, Instant};
 use winit::{
     dpi::{PhysicalSize, Size},
-    event::{DeviceEvent, ElementState, Event, VirtualKeyCode, WindowEvent},
+    event::{DeviceEvent, ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     window::WindowBuilder,
 };
@@ -75,24 +75,25 @@ fn main() -> Result<(), Error> {
                 }
             }
             Event::DeviceEvent {
-                event: DeviceEvent::Key(key),
+                // Using pattern matching and destructuring to filter unwanted items.
+                event:
+                    DeviceEvent::Key(KeyboardInput {
+                        scancode: _,
+                        state: ElementState::Pressed, // On press, not on release.
+                        modifiers: _,
+                        virtual_keycode: Some(key_code), // When key code is Some.
+                    }),
                 device_id: _,
-            } => {
-                // Only analyse keycode if element state is pressed (not on release) and is Some
-                if key.state == ElementState::Pressed && key.virtual_keycode.is_some() {
-                    // Get keycode out of Option and handle specific keycodes, ignore the rest.
-                    match key.virtual_keycode.unwrap() {
-                        VirtualKeyCode::Space => {
-                            if doomfire.is_lit {
-                                doomfire.extinguish();
-                            } else if !doomfire.is_lit {
-                                doomfire.ignite();
-                            }
-                        }
-                        _ => (),
+            } => match key_code {
+                VirtualKeyCode::Space => {
+                    if doomfire.is_lit {
+                        doomfire.extinguish();
+                    } else if !doomfire.is_lit {
+                        doomfire.ignite();
                     }
                 }
-            }
+                _ => (),
+            },
             _ => (),
         }
     });
