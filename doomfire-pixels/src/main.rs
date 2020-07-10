@@ -75,24 +75,25 @@ fn main() -> Result<(), Error> {
                 }
             }
             Event::DeviceEvent {
-                // Using pattern matching and destructuring to filter unwanted items.
-                event:
-                    DeviceEvent::Key(KeyboardInput {
-                        state: ElementState::Pressed, // On press, not on release.
-                        virtual_keycode: Some(key_code), // When key code is Some.
-                        ..
-                    }),
+                // Using pattern matching and destructuring to extract KeyboardInput.
+                event: DeviceEvent::Key(keyboard_input),
                 device_id: _,
-            } => match key_code {
-                VirtualKeyCode::Space => {
-                    if doomfire.is_lit {
-                        doomfire.extinguish();
-                    } else if !doomfire.is_lit {
-                        doomfire.ignite();
+            } => {
+                // Using if let instead of match since we only have to handle Some.
+                if let Some(key_code) = keyboard_input.virtual_keycode {
+                    match key_code {
+                        // Using a match guard to make sure we run code on pressed and not released.
+                        VirtualKeyCode::Space if keyboard_input.state == ElementState::Pressed => {
+                            if doomfire.is_lit {
+                                doomfire.extinguish();
+                            } else if !doomfire.is_lit {
+                                doomfire.ignite();
+                            }
+                        }
+                        _ => (),
                     }
                 }
-                _ => (),
-            },
+            }
             _ => (),
         }
     });
