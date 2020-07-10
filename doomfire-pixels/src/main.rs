@@ -78,10 +78,9 @@ fn main() -> Result<(), Error> {
                 // Using pattern matching and destructuring to filter unwanted items.
                 event:
                     DeviceEvent::Key(KeyboardInput {
-                        scancode: _,
                         state: ElementState::Pressed, // On press, not on release.
-                        modifiers: _,
                         virtual_keycode: Some(key_code), // When key code is Some.
+                        ..
                     }),
                 device_id: _,
             } => match key_code {
