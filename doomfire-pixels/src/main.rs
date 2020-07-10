@@ -76,22 +76,25 @@ fn main() -> Result<(), Error> {
             }
             Event::DeviceEvent {
                 // Using pattern matching and destructuring to extract KeyboardInput.
-                event: DeviceEvent::Key(keyboard_input),
+                event:
+                    DeviceEvent::Key(KeyboardInput {
+                            state,
+                            virtual_keycode: Some(key_code),
+                            ..
+                        },
+                    ),
                 device_id: _,
             } => {
-                // Using if let instead of match since we only have to handle Some.
-                if let Some(key_code) = keyboard_input.virtual_keycode {
-                    match key_code {
-                        // Using a match guard to make sure we run code on pressed and not released.
-                        VirtualKeyCode::Space if keyboard_input.state == ElementState::Pressed => {
-                            if doomfire.is_lit {
-                                doomfire.extinguish();
-                            } else if !doomfire.is_lit {
-                                doomfire.ignite();
-                            }
+                match key_code {
+                    // Using a match guard to make sure we run code on pressed and not released.
+                    VirtualKeyCode::Space if state == ElementState::Pressed => {
+                        if doomfire.is_lit {
+                            doomfire.extinguish();
+                        } else if !doomfire.is_lit {
+                            doomfire.ignite();
                         }
-                        _ => (),
                     }
+                    _ => (),
                 }
             }
             _ => (),
